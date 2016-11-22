@@ -12,6 +12,8 @@ RUN { \
 		echo mysql-community-server mysql-community-server/remove-test-db select false; \
 	} | debconf-set-selections \
 	&& DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server
+
+RUN echo "[mysqld]\nlower_case_table_names = 1" >> /etc/mysql/my.cnf
 	
 # install Maven
 RUN apt-get install -y maven
@@ -25,7 +27,12 @@ RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true 
  && rm -rf /var/lib/apt/lists/* \
  && rm -rf /var/cache/oracle-jdk8-installer
 
-RUN echo "service mysql start" >> /etc/bash.bashrc
+# RUN echo "service mysql start" >> /etc/bash.bashrc
+COPY start.sh /sbin/start.sh
+RUN chmod 755 /sbin/start.sh
+ENTRYPOINT ["/sbin/start.sh"]
+# CMD /sbin/entrypoint.sh & \
+# 	service mysql start && bash 
 
 # RUN cd /opt
 # RUN wget http://www.us.apache.org/dist/tomcat/tomcat-9/v9.0.0.M13/bin/apache-tomcat-9.0.0.M13.tar.gz
