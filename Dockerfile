@@ -1,4 +1,4 @@
-FROM docker-gitlab-ci-multi-runner:latest
+FROM digitallumberjack/docker-gitlab-ci-multi-runner
 MAINTAINER Kagami Sascha Rosylight <saschanaz@outlook.com>
 
 RUN apt-get update
@@ -11,7 +11,7 @@ RUN { \
 		echo mysql-community-server mysql-community-server/re-root-pass password ''; \
 		echo mysql-community-server mysql-community-server/remove-test-db select false; \
 	} | debconf-set-selections \
-	&& DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server
+	&& DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server libmysql-java
 
 RUN echo "[mysqld]\nlower_case_table_names = 1" >> /etc/mysql/my.cnf
 	
@@ -27,18 +27,16 @@ RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true 
  && rm -rf /var/lib/apt/lists/* \
  && rm -rf /var/cache/oracle-jdk8-installer
 
-# RUN echo "service mysql start" >> /etc/bash.bashrc
 COPY start.sh /sbin/start.sh
 RUN chmod 755 /sbin/start.sh
 ENTRYPOINT ["/sbin/start.sh"]
-# CMD /sbin/entrypoint.sh & \
-# 	service mysql start && bash 
 
-# RUN cd /opt
-# RUN wget http://www.us.apache.org/dist/tomcat/tomcat-9/v9.0.0.M13/bin/apache-tomcat-9.0.0.M13.tar.gz
-# RUN tar xzf apache-tomcat-9.0.0.M13.tar.gz
+RUN cd /opt \
+ && wget http://www.us.apache.org/dist/tomcat/tomcat-9/v9.0.0.M13/bin/apache-tomcat-9.0.0.M13.tar.gz \
+ && tar xzf apache-tomcat-9.0.0.M13.tar.gz
 
 ENV CATALINA_HOME="/opt/apache-tomcat-9.0.0.M13"
+RUN chmod 755 $CATALINA_HOME/webapps
 
 RUN locale-gen en_US.UTF-8
 
