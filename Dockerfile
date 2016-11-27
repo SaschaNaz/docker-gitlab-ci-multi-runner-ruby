@@ -14,6 +14,8 @@ RUN { \
 	&& DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server libmysql-java
 
 RUN echo "[mysqld]\nlower_case_table_names = 1" >> /etc/mysql/my.cnf
+
+VOLUME /var/lib/mysql
 	
 # install Maven
 RUN apt-get install -y maven
@@ -24,19 +26,20 @@ RUN apt-get update
 
 RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y oracle-java8-installer \
- && rm -rf /var/lib/apt/lists/* \
  && rm -rf /var/cache/oracle-jdk8-installer
+
+
+RUN cd $GITLAB_CI_MULTI_RUNNER_HOME_DIR \
+ && wget http://www.us.apache.org/dist/tomcat/tomcat-9/v9.0.0.M13/bin/apache-tomcat-9.0.0.M13.tar.gz \
+ && tar xzf apache-tomcat-9.0.0.M13.tar.gz
+
+ENV CATALINA_HOME="${GITLAB_CI_MULTI_RUNNER_HOME_DIR}/apache-tomcat-9.0.0.M13"
+# ENV CLASSPATH=$CLASSPATH:$CATALINA_HOME/bin/*.jar
+RUN chown -R $GITLAB_CI_MULTI_RUNNER_USER $CATALINA_HOME
 
 COPY start.sh /sbin/start.sh
 RUN chmod 755 /sbin/start.sh
 ENTRYPOINT ["/sbin/start.sh"]
-
-RUN cd /opt \
- && wget http://www.us.apache.org/dist/tomcat/tomcat-9/v9.0.0.M13/bin/apache-tomcat-9.0.0.M13.tar.gz \
- && tar xzf apache-tomcat-9.0.0.M13.tar.gz
-
-ENV CATALINA_HOME="/opt/apache-tomcat-9.0.0.M13"
-RUN chmod 755 $CATALINA_HOME/webapps
 
 RUN locale-gen en_US.UTF-8
 
