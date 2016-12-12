@@ -8,7 +8,7 @@ Docker image with gitlab-ci-multi-runner, which can run iTrust Maven builds.
 docker run -d --env "CI_SERVER_URL=https://gitlabci.example.com" \
               --env "RUNNER_TOKEN=YOUR_TOKEN_FROM_GITLABCI" \
               --restart="always" \
-              --name=ruby_runner \
+              --name=itrust_runner \
               saschanaz/docker-gitlab-runner-itrust:latest
 ```
 
