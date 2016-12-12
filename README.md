@@ -14,7 +14,7 @@ docker run -d --env "CI_SERVER_URL=https://gitlabci.example.com" \
 
 In your project add `.gitlab-ci.yml`
 
-```
+```yaml
 .validate: &validate
   stage: build
   script:
