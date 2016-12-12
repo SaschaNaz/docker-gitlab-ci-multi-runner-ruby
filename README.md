@@ -23,7 +23,6 @@ In your project add `.gitlab-ci.yml`
 .verify: &verify
   stage: test
   script:
-    # - 'service mysql status'
     - 'pushd iTrust;mvn $MAVEN_CLI_OPTS verify;popd'
 
 # Validate merge requests using JDK8
